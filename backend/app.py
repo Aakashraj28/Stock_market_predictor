@@ -108,7 +108,7 @@ def get_profile(ticker: str):
     return info
 
 # ---------- Routes ----------
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/search")
+@app.get("/api/search")
 def search():
     q = (request.args.get("q") or "").lower()
     if not q:
@@ -118,7 +118,7 @@ def search():
     items = df[mask].head(20).to_dict(orient="records")
     return jsonify(items=items)
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/top-movers")
+@app.get("/api/top-movers")
 def top_movers():
     universe = SYMBOLS.sample(min(50, len(SYMBOLS)), random_state=7) if len(SYMBOLS) > 0 else pd.DataFrame(columns=["ticker","name"])
     rows = []
@@ -140,7 +140,7 @@ def top_movers():
     losers  = df.sort_values("changePct", ascending=True).head(5).to_dict(orient="records")
     return jsonify(gainers=gainers, losers=losers)
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/company/<ticker>")
+@app.get("/api/company/<ticker>")
 def company(ticker):
     period = request.args.get("period", "2y")  # e.g., 1mo, 6mo, 1y, 5y, max
     interval = request.args.get("interval", "1d")
@@ -207,7 +207,7 @@ def company(ticker):
 _news_cache = {}
 CACHE_TTL = 60 * 15
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/news/<ticker>")
+@app.get("/api/news/<ticker>")
 def company_news(ticker):
     now = time.time()
     if ticker in _news_cache and (now - _news_cache[ticker]["ts"] < CACHE_TTL):
@@ -241,7 +241,7 @@ def company_news(ticker):
         return jsonify(error=str(e)), 500
 
 # --------- Hybrid training / prediction ----------
-@app.post("https://stock-market-predictor-backend-a8v3.onrender.com/api/train/<ticker>")
+@app.post("/api/train/<ticker>")
 def train_endpoint(ticker):
     # Hybrid is now the default trainer for accuracy
     try:
@@ -258,7 +258,7 @@ def train_endpoint(ticker):
         traceback.print_exc()
         return jsonify(error=f"Training failed: {e}"), 400
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/predict/<ticker>")
+@app.get("/api/predict/<ticker>")
 def predict_endpoint(ticker):
     # Hybrid predictor for 7 trading days
     try:
@@ -367,7 +367,7 @@ def fetch_event_calendar():
     return events
 
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/events")
+@app.get("/api/events")
 def events_upcoming():
     try:
         events = fetch_event_calendar()
@@ -382,7 +382,7 @@ def events_upcoming():
         return jsonify(error=str(e)), 500
 
 
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/events/all")
+@app.get("/api/events/all")
 def events_all():
     try:
         events = fetch_event_calendar()
@@ -481,7 +481,7 @@ def merge_by_date(*dicts, equity_map=None):
     return out
 
 # ---------- Financials API ----------
-@app.get("https://stock-market-predictor-backend-a8v3.onrender.com/api/financials/<ticker>")
+@app.get("/api/financials/<ticker>")
 def financials(ticker):
     try:
         tk = yf.Ticker(ticker)
