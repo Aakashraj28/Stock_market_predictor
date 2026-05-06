@@ -1,0 +1,10 @@
+{
+  "ticker": "SUZLON.NS",
+  "model": "Prophet",
+  "target_scale": "log",
+  "train_points": 991,
+  "test_points": 248,
+  "rmse": 0.5661556828695761,
+  "mae": 0.5098549624628492,
+  "trained_at": "2025-09-05T11:55:46.216249Z"
+}

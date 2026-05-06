@@ -1,0 +1,10 @@
+{
+  "ticker": "HPIL.NS",
+  "model": "Prophet",
+  "target_scale": "log",
+  "train_points": 990,
+  "test_points": 248,
+  "rmse": 1.0627790750504105,
+  "mae": 0.3244672758222976,
+  "trained_at": "2025-09-05T12:02:44.240460Z"
+}

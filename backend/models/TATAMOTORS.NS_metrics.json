@@ -1,0 +1,10 @@
+{
+  "ticker": "TATAMOTORS.NS",
+  "model": "Prophet",
+  "target_scale": "log",
+  "train_points": 991,
+  "test_points": 248,
+  "rmse": 0.7124076030547765,
+  "mae": 0.6307210487403628,
+  "trained_at": "2025-09-05T11:37:56.588391Z"
+}

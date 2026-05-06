@@ -1,0 +1,10 @@
+{
+  "ticker": "ADANIGREEN.NS",
+  "model": "Prophet",
+  "target_scale": "log",
+  "train_points": 991,
+  "test_points": 248,
+  "rmse": 1.3617595299469334,
+  "mae": 1.1939863573069265,
+  "trained_at": "2025-09-05T11:41:05.335899Z"
+}
