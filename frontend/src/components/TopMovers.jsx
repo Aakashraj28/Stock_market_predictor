@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 export default function TopMovers(){
   const [data,setData] = useState({gainers:[], losers:[]}); const [loading,setLoading] = useState(true)
   const nav = useNavigate()
-  useEffect(()=>{(async()=>{try{const r=await axios.get('/api/top-movers'); setData(r.data);}finally{setLoading(false)}})()},[])
+  useEffect(()=>{(async()=>{try{const r=await axios.get('https://stock-market-predictor-backend-a8v3.onrender.com/api/top-movers'); setData(r.data);}finally{setLoading(false)}})()},[])
   if(loading) return <div className="text-sm text-slate-500">Loading top movers…</div>
   const Card=({title,items})=>(
     <div className="card p-4">
