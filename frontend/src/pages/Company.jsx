@@ -33,7 +33,7 @@ export default function Company() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await axios.get(`/api/company/${ticker}`);
+        const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/company/${ticker}`);
         setInfo(r.data.info);
         setPrices(r.data.candles || []);
         setIndicators(r.data.indicators || { rsi: [], macd: [], sma: [] });
@@ -47,7 +47,7 @@ export default function Company() {
   // Fetch financials separately and store the full API response object
   useEffect(()=>{(async()=>{
     try {
-      const r = await axios.get(`/api/financials/${ticker}`)
+      const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/financials/${ticker}`)
       // r.data => { quarterly: [...], annual: [...] }
       setFinancials(r.data || null)
     } catch(e) {
@@ -70,16 +70,16 @@ export default function Company() {
   const onPredict = async () => {
     setLoadingPred(true);
     try {
-      const r = await axios.get(`/api/predict/${ticker}`);
+      const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/predict/${ticker}`);
 
       // ✅ NEW: check stale model
       if (r.data.is_stale) {
         const retrain = confirm("⚠️ Model is older than 7 days. Retrain now?");
         
         if (retrain) {
-          await axios.post(`/api/train/${ticker}`);
+          await axios.post(`https://stock-market-predictor-backend-a8v3.onrender.com/api/train/${ticker}`);
           
-          const newPred = await axios.get(`/api/predict/${ticker}`);
+          const newPred = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/predict/${ticker}`);
           setForecast(r.data.forecast || []);
           setRmse(r?.data?.metrics?.rmse ?? null);
         } else {
@@ -95,8 +95,8 @@ export default function Company() {
     } catch (e) {
       if (e.response && e.response.status === 404) {
         if (confirm("No trained model found. Train now?")) {
-          await axios.post(`/api/train/${ticker}`);
-          const r = await axios.get(`/api/predict/${ticker}`);
+          await axios.post(`https://stock-market-predictor-backend-a8v3.onrender.com/api/train/${ticker}`);
+          const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/predict/${ticker}`);
           setForecast(r.data.forecast || []);
           setRmse(r?.data?.metrics?.rmse ?? null);
           const rmse = r?.data?.metrics?.rmse;
@@ -115,7 +115,7 @@ export default function Company() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await axios.get(`/api/news/${ticker}`);
+        const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/news/${ticker}`);
         if (Array.isArray(r.data?.articles)) setNews(r.data.articles);
         else if (Array.isArray(r.data)) setNews(r.data);
         else setNews([]);
