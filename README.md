@@ -1,12 +1,12 @@
-# Stock Market Dashboard & Price Predictor (Prophet Edition)
+# Stock Market Dashboard & Price Predictor (CNN-LSTM Edition)
 
-Full-stack project (React + Tailwind + Flask) with **Prophet** forecasting and **separate train/test** workflow. Includes full **NSE & BSE** search, live data via **yfinance**, candlesticks, indicators, and 7‑day forecasts.
+Full-stack project (React + Tailwind + Flask) with **CNN-LSTM** forecasting and **separate train/test** workflow. Includes full **NSE & BSE** search, live data via **yfinance**, candlesticks, indicators, and 7‑day forecasts.
 
 ## Features
 - Home: “Start your stock market journey” + CTA
 - Explore: search across **all NSE & BSE** companies (cached & refreshed), Top 5 **gainers/losers**
 - Company: logo, summary, candlestick chart, RSI/MACD/SMA charts, historical table
-- ML: **Prophet** with proper **train/test split**, metrics (RMSE/MAE) saved, and a test-set comparison plot
+- ML: **CNN-LSTM** with proper **train/test split**, metrics (RMSE/MAE) saved, and a test-set comparison plot
 - Predict endpoint loads the saved model and forecasts the next **7 trading days**
 
 ## Backend endpoints
