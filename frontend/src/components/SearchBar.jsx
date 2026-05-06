@@ -8,7 +8,7 @@ export default function SearchBar({ placeholder='Search NSE/BSE by name or symbo
   useEffect(() => {
     const t = setTimeout(async () => {
       if(q.length < 1){ setSuggestions([]); return; }
-      const res = await axios.get(`/api/search`, { params: { q } })
+      const res = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/search`, { params: { q } })
       setSuggestions(res.data.items || [])
     }, 200)
     return () => clearTimeout(t)
