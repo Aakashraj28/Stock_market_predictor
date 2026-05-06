@@ -32,7 +32,7 @@ SYMBOLS = load_symbols()  # DataFrame with ticker,name,exchange
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-NEWSAPI_KEY = "66d85a5886fc410a93cb02134c6eb2ed"
+NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
 
 # ---------- Helpers ----------
 def safe_float(val):
