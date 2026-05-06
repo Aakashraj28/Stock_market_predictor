@@ -140,12 +140,38 @@ def top_movers():
     losers  = df.sort_values("changePct", ascending=True).head(5).to_dict(orient="records")
     return jsonify(gainers=gainers, losers=losers)
 
+import time
+import yfinance as yf
+from yfinance.exceptions import YFRateLimitError
+from flask import jsonify, request
+
+# simple in-memory cache
+company_cache = {}
+
+def fetch_with_retry(tk, period, interval, retries=3):
+    for i in range(retries):
+        try:
+            return tk.history(period=period, interval=interval, auto_adjust=False)
+        except YFRateLimitError:
+            time.sleep(2)  # wait and retry
+        except Exception as e:
+            raise e
+    return None
+
+
 @app.get("/api/company/<ticker>")
 def company(ticker):
-    period = request.args.get("period", "2y")  # e.g., 1mo, 6mo, 1y, 5y, max
+    period = request.args.get("period", "2y")
     interval = request.args.get("interval", "1d")
 
-    # ensure valid combos for yfinance
+    # cache key
+    cache_key = f"{ticker}_{period}_{interval}"
+
+    # ✅ RETURN CACHE if exists
+    if cache_key in company_cache:
+        return jsonify(company_cache[cache_key])
+
+    # ensure valid combos
     valid_intervals = {
         "1mo": ["1d", "1h"],
         "3mo": ["1d", "1h"],
@@ -157,50 +183,64 @@ def company(ticker):
         "ytd": ["1d", "1wk"],
         "max": ["1d", "1wk", "1mo"],
     }
-    # fallback interval if invalid
+
     if period in valid_intervals and interval not in valid_intervals[period]:
         interval = valid_intervals[period][0]
 
-    tk = yf.Ticker(ticker)
-    df = tk.history(period=period, interval=interval, auto_adjust=False)
-
-    if df is None or df.empty:
-        return jsonify(error=f"No data for {ticker} with period={period}, interval={interval}"), 404
-
-    info = get_profile(ticker)
-    indicators = compute_indicators(df.copy())
-    candles = to_candles(df)
-
-    last_close = safe_float(df["Close"].iloc[-1])
-    last_volume = safe_float(df["Volume"].iloc[-1])
-    last_date = df.index[-1].date().isoformat()
-    window = df.tail(252)
-    hi_52w = safe_float(window["High"].max()) if not window.empty else None
-    lo_52w = safe_float(window["Low"].min()) if not window.empty else None
-    avg_vol_20 = safe_float(df["Volume"].tail(20).mean()) if len(df) >= 20 else safe_float(df["Volume"].mean())
-
-    technicals = {
-        "lastClose": last_close,
-        "lastVolume": last_volume,
-        "lastDate": last_date,
-        "high52w": hi_52w,
-        "low52w": lo_52w,
-        "avgVolume20d": avg_vol_20,
-    }
-
     try:
-        last_price = float(tk.fast_info.last_price)
-    except Exception:
-        last_price = last_close
+        tk = yf.Ticker(ticker)
 
-    return jsonify(
-        info=info,
-        indicators=indicators,
-        candles=candles,
-        last=last_price,
-        technicals=technicals,
-    )
+        # ✅ SAFE FETCH
+        df = fetch_with_retry(tk, period, interval)
 
+        if df is None or df.empty:
+            return jsonify(error=f"No data for {ticker}"), 404
+
+        info = get_profile(ticker)
+        indicators = compute_indicators(df.copy())
+        candles = to_candles(df)
+
+        last_close = safe_float(df["Close"].iloc[-1])
+        last_volume = safe_float(df["Volume"].iloc[-1])
+        last_date = df.index[-1].date().isoformat()
+
+        window = df.tail(252)
+        hi_52w = safe_float(window["High"].max()) if not window.empty else None
+        lo_52w = safe_float(window["Low"].min()) if not window.empty else None
+        avg_vol_20 = safe_float(df["Volume"].tail(20).mean()) if len(df) >= 20 else safe_float(df["Volume"].mean())
+
+        technicals = {
+            "lastClose": last_close,
+            "lastVolume": last_volume,
+            "lastDate": last_date,
+            "high52w": hi_52w,
+            "low52w": lo_52w,
+            "avgVolume20d": avg_vol_20,
+        }
+
+        try:
+            last_price = float(tk.fast_info.last_price)
+        except Exception:
+            last_price = last_close
+
+        result = {
+            "info": info,
+            "indicators": indicators,
+            "candles": candles,
+            "last": last_price,
+            "technicals": technicals,
+        }
+
+        # ✅ STORE IN CACHE
+        company_cache[cache_key] = result
+
+        return jsonify(result)
+
+    except YFRateLimitError:
+        return jsonify(error="Rate limited. Try again in few seconds."), 429
+
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 
 # --------- News (tightened query + proper shape) ----------
