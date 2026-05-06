@@ -20,7 +20,7 @@ export default function CandleChart({ ticker, height = 420 }) {
   const loadData = async (period) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:5001/api/company/${ticker}?period=${period}&interval=1d`
+        `https://stock-market-predictor-backend-a8v3.onrender.com/api/company/${ticker}?period=${period}&interval=1d`
       );
       const json = await res.json();
       if (json.candles) setData(json.candles);
