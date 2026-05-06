@@ -25,7 +25,7 @@ from train import (
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 SYMBOLS = load_symbols()  # DataFrame with ticker,name,exchange
 
@@ -513,6 +513,13 @@ def financials(ticker):
     except Exception as e:
         traceback.print_exc()
         return jsonify(error=str(e)), 500
+
+@app.after_request
+def after_request(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    return response
 
 
 
