@@ -7,7 +7,7 @@ export default function EventCalendar() {
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"))
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5001/api/events/all")
+    fetch("https://stock-market-predictor-backend-a8v3.onrender.com/api/events/all")
       .then(res => res.json())
       .then(data => setEvents(data.events || []))
       .catch(err => console.error("Failed to fetch events", err))
