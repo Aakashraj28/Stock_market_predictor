@@ -1,7 +1,7 @@
 Flask
 flask-cors
-pandas
-numpy==1.23.5
+numpy>=1.26.0
+pandas>=2.2.0
 yfinance
 pandas-ta
 scikit-learn
@@ -12,6 +12,6 @@ prophet
 cmdstanpy
 textblob
 playwright
-tensorflow-cpu==2.12.0
+tensorflow==2.16.1
 setuptools==65.5.0
 wheel
