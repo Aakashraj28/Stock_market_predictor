@@ -14,7 +14,7 @@ export default function CalendarPage() {
   }
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5001/api/events/all")
+    fetch("https://stock-market-predictor-backend-a8v3.onrender.com/api/events/all")
       .then(res => res.json())
       .then(data => {
         const evs = data.events || []
