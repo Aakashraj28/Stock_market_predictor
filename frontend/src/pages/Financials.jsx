@@ -24,7 +24,7 @@ export default function Financials() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await axios.get(`/api/financials/${ticker}`);
+        const r = await axios.get(`https://stock-market-predictor-backend-a8v3.onrender.com/api/financials/${ticker}`);
         setFinData(r.data);
       } catch (e) {
         console.error("Financials API error", e);
